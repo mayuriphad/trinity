@@ -9,6 +9,6 @@ jobs:
         with: {python-version: '3.13'}
       - run: pip install -q -r tests/requirements-test.txt
       - name: new + related tests
-        run: cd tests && python -m pytest -q -p no:randomly unit/test_4258_autocompact_thrash_not_auth.py unit/test_3984_3849_not_a_credential_failure.py unit/test_4123_auth_prefix_wins.py unit/test_904_signal_kill_not_auth.py 2>&1 | tail -30
+        run: cd tests && python -m pytest -q -p no:randomly unit/test_4258_autocompact_thrash_not_auth.py unit/test_3984_3849_not_a_credential_failure.py unit/test_4123_auth_prefix_wins.py unit/test_904_sigkill_no_false_auth.py 2>&1 | tail -30
       - name: new tests on dev code (must fail)
         run: git fetch -q --depth=1 origin bad84de7e820b88d348248f91f890769945400a4 && git checkout bad84de7e820b88d348248f91f890769945400a4 -- src && cd tests && python -m pytest -q -p no:randomly unit/test_4258_autocompact_thrash_not_auth.py 2>&1 | tail -15
