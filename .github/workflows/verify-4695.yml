@@ -1,0 +1,27 @@
+name: verify-4695
+on: push
+jobs:
+  loop:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [before, after]
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -q -r tests/requirements-test.txt
+      - if: matrix.variant == 'before'
+        run: git checkout HEAD~2 -- tests/unit/test_2742_git_status_lock_free.py
+      - name: 50 runs under CPU load
+        run: |
+          for i in $(seq $(( $(nproc) * 2 ))); do (yes > /dev/null &) ; done
+          cd tests
+          pass=0; fail=0; skip=0
+          for i in $(seq 50); do
+            out=$(python -m pytest -p no:randomly -q -rs "unit/test_2742_git_status_lock_free.py::TestACommitSurvivesAConcurrentPoll::test_a_commit_fails_while_a_legacy_status_holds_the_index_lock" 2>&1 | tail -3)
+            case "$out" in *failed*) fail=$((fail+1));; *skipped*) skip=$((skip+1));; *passed*) pass=$((pass+1));; *) echo "$out";; esac
+          done
+          echo "RESULT ${{ matrix.variant }}: pass=$pass fail=$fail skip=$skip"
