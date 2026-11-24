@@ -12,4 +12,4 @@ jobs:
       - name: new + touched tests
         run: cd tests && python -m pytest -q -p no:randomly unit/test_4666_admin_self_share.py unit/test_837_workspace_only_floor.py unit/test_ent459_operator_invite.py unit/test_ent719_inline_layer_matches_route_rule.py unit/test_ent357_workspace_owned_roster.py unit/test_4579_credential_primary_reach.py 2>&1 | tail -30
       - name: new tests on dev code (must fail)
-        run: git checkout origin/dev -- src || git checkout HEAD~3 -- src && cd tests && python -m pytest -q -p no:randomly unit/test_4666_admin_self_share.py 2>&1 | tail -15
+        run: git fetch -q --depth=1 origin bad84de7e820b88d348248f91f890769945400a4 && git checkout bad84de7e820b88d348248f91f890769945400a4 -- src && cd tests && python -m pytest -q -p no:randomly unit/test_4666_admin_self_share.py 2>&1 | tail -15
